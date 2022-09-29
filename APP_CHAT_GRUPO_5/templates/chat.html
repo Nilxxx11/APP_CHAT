@@ -1,0 +1,70 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+CHAT-INICIADO
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block content %}
+    <link href="../static/bootstrap.min.css" rel="stylesheet" />
+    <link href="../static/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket;
+            $(document).ready(function(){
+                socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
+                socket.on('connect', function() {
+                    socket.emit('join', {});
+                });
+                socket.on('status', function(data) {
+                    $('#chat').val($('#chat').val() + '<' + data.msg + '>\n');
+                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                });
+                socket.on('message', function(data) {
+                    $('#chat').val($('#chat').val() + data.msg + '\n');
+                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                });
+                $('#send').click(function(e) {
+                        text = $('#text').val();
+                        $('#text').val('');
+                        socket.emit('text', {msg: text});
+                });
+            });
+            function leave_room() {
+                socket.emit('left', {}, function() {
+                    socket.disconnect();
+                    // go back to the login page
+                    window.location.href = "{{ url_for('dashboard') }}";
+                });
+            }
+        </script>
+  </head>
+
+  <body class="text-center">
+    <div class="contenedor">
+        
+    <div class="chatwindow">
+      <h2 style="color:#dbd4ed; background-color: #21223c; ">CHAT-GRUPO 5</h2>
+      <h2 style="color: #dbd4ed ">{{session['room']}}</h2>
+      
+          <br>
+     
+        
+      <textarea id="chat" cols="70" rows="10" placeholder="No mensajes..." style="color: black;font-weight: bold;font-size:10px;" ></textarea><br /><br />
+      <input type="text" id="text" size="60" placeholder="ingresa el mensaje" style="color: black; font-size:10px;" />
+      <button type="button" id="send" class="btn btn-success">ENVIAR</button><br /><br />
+      <center><button type="button" class="btn btn-danger" onclick=leave_room()>SALIR DEL CHAT</button></center>
+      
+      </div>
+      
+    </div>
+  </body>
+</html>
+{% endblock %}

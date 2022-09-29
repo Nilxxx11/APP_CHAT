@@ -1,0 +1,35 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Sign Up
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
+{% endblock %}
+
+{% block content %}
+{%include "tools/barra_home.html"%}
+<div class="container">
+
+  <form class="form-signin" method="POST" action="/signup" style="color: #dbd4ed">
+    <h2 class="form-signin-heading">REGISTRAR</h2>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="notification is-danger">
+    {{ messages[0] }}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    {{ form.hidden_tag() }}
+    {{ wtf.form_field(form.username) }}
+    {{ wtf.form_field(form.email) }}
+    {{ wtf.form_field(form.password) }}
+    <button class="btn btn-lg btn-primary btn-block" type="submit" style="color:#dbd4ed; background-color: #21223c; ">Ingresar</button>
+  </form>
+
+</div> 
+{% endblock %}
